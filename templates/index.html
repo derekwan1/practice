@@ -8,10 +8,10 @@
 		<ul>
 				{% for question in questions %}
 				<form>
-				<li>{{ question[0].replace('Question:', '', 1) }} </li>
+				<li>{{ question[0] }} </li>
 				{%for elem in question[1:] %}
 				<p>
-				<input type = "radio" name = "Answer"/> <label>{{elem.replace('Option:', '', 1)}}</label></p>
+				<input type = "radio" name = "Answer"/> <label>{{elem}}</label></p>
 					{%endfor%}
 				<input type = "Submit">
 				</form>

@@ -4,28 +4,25 @@ from jinja2 import Template
 
 def generator(lines):
 	"""
-	>>> lines = ['Question: 1', 'Option: 1', 'Question: 2', 'Option: 3']
+	>>> lines = ['Question: 1', 'Option: 1', 'Question: 2', 'Option: 3', "Question: 3", "Option: 4"]
 	>>> questions = list(generator(lines))
 	>>> len(questions)
-	2
+	3
 	>>> len(questions[0])
 	2
 	>>> len(questions[1])
 	2
 	"""
-	lst, seen = [], 0
+	lst = []
 	for line in lines:
-		if line.startswith('Question:') and seen == 0:
-			lst.append(line)
-			seen += 1
-		elif line.startswith('Question:') and seen == 1:
-			val = lst
-			lst = []
-			lst.append(line)
-			yield val
+		if line.startswith('Question:'):
+			if lst:
+				yield lst
+			lst = [line.replace('Question:', '', 1)]
 		elif line.strip():
-			lst.append(line)
-	yield lst
+			lst.append(line.replace('Option:', '', 1))
+	if lst:
+		yield lst
 
 
 def main():
@@ -34,7 +31,7 @@ def main():
 	env = Environment(loader=PackageLoader('practice', 'templates'))	
 	template = env.get_template('index.html')
 
-	f = open('output.html', 'w')
+	f = open('outputs/output.html', 'w')
 	f.write(template.render(questions = questions))
 	f.close()
 
