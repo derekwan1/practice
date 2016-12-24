@@ -1,21 +1,45 @@
 <html>
 	<head>
-		<title> Practice
-		</title>
+		<title>Practice</title>
+    <style>
+    .message {
+      border-radius:0.5em;
+      padding:1em;
+      border:1px solid #666;
+      background-color:#f6f6f6;
+      display:none;
+    }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      $('input[type="submit"]').on('click', function(e) {
+        e.preventDefault();
+        var form = $(this).parent();
+        var message = form.children('.message').show();
+        if (form.find('input[correct="True"]').prop('checked')) {
+          message.html('Correct.');
+        } else {
+          message.html('Incorrect.');
+        }
+      });
+    });
+    </script>
 	</head>
 	<body>
 		<h1>Practice</h1>
-		<ul>
-				{% for question in questions %}
-				<form>
-				<li>{{ question[0] }} </li>
-				{%for elem in question[1:] %}
-				<p>
-				<input type = "radio" name = "Answer"/> <label>{{elem}}</label></p>
-					{%endfor%}
-				<input type = "Submit">
-				</form>
-				{% endfor %}
-		</ul>
+		{% for question in questions %}
+		<form>
+		{{ question[0] }}
+			{% for elem in question[1:] %}
+			<p>
+        <input type = "radio" name = "Answer" {% if elem.startswith('Correct:') %}correct="True"{% endif %}/>
+        <label>{{ elem.replace('Correct:', '') }}</label>
+      </p>
+			{% endfor %}
+  		<input type = "Submit">
+      <p class="message">Inorrect.</p>
+		</form>
+		{% endfor %}
 	</body>
 </html>
