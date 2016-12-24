@@ -1,3 +1,13 @@
+"""
+Generates HTML from markdown
+
+Usage:
+	practice.py <filepath>
+"""
+
+
+import docopt
+import os
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from jinja2 import Template
@@ -24,16 +34,27 @@ def generator(lines):
 	if lst:
 		yield lst
 
-
-def main():
-	questions = generator(open('questions.md').readlines())
-	
-	env = Environment(loader=PackageLoader('practice', 'templates'))	
-	template = env.get_template('index.html')
-
-	f = open('outputs/output.html', 'w')
+def converter(path, questions, template):
+	outpath = os.path.join('outputs', path)
+	f = open(outpath, 'w')
 	f.write(template.render(questions = questions))
 	f.close()
+	print(' * File outputted at', outpath)
+
+def main():
+	arguments = docopt.docopt(__doc__, version='Practice 1.0')
+	env = Environment(loader=PackageLoader('practice', 'templates'))	
+	template = env.get_template('index.html')
+	path = arguments['<filepath>']
+	if os.path.isdir(path):
+		os.makedirs(os.path.join('outputs', path), exist_ok=True)
+		for filename in os.listdir(path):
+			if filename.endswith('.md'):
+				filepath = os.path.join(path, filename)
+				questions = generator(open(filepath).readlines())
+				converter(filepath, questions, template)		
+	else:
+		converter(path, generator(open(path).readlines()), template)
 
 if __name__ == '__main__':
 	main()
