@@ -34,7 +34,8 @@ def generator(lines):
 	if lst:
 		yield lst
 
-def converter(path, questions, template):
+def converter(path, template):
+	questions = generator(open(path).readlines())
 	outpath = os.path.join('outputs', path)
 	f = open(outpath, 'w')
 	f.write(template.render(questions = questions))
@@ -51,10 +52,9 @@ def main():
 		for filename in os.listdir(path):
 			if filename.endswith('.md'):
 				filepath = os.path.join(path, filename)
-				questions = generator(open(filepath).readlines())
-				converter(filepath, questions, template)		
+				converter(filepath, template)		
 	else:
-		converter(path, generator(open(path).readlines()), template)
+		converter(path, template)
 
 if __name__ == '__main__':
 	main()
