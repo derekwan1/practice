@@ -7,7 +7,14 @@
 		<h1>Practice</h1>
 		<ul>
 				{% for question in questions %}
-				<li>{{ question }} </li>
+				<form>
+				<li>{{ question[0].replace('Question:', '', 1) }} </li>
+				{%for elem in question[1:] %}
+				<p>
+				<input type = "radio" name = "Answer"/> <label>{{elem.replace('Option:', '', 1)}}</label></p>
+					{%endfor%}
+				<input type = "Submit">
+				</form>
 				{% endfor %}
 		</ul>
 	</body>
