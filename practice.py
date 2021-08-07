@@ -1,13 +1,11 @@
 """
 Generates HTML from markdown
-
-Usage:
-	practice.py <filepath>
 """
+#!/usr/bin/python3
 
-
-import docopt
-import os
+from docopt import docopt
+from os.path import join, dirname, isdir
+from os import makedirs, listdir
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from jinja2 import Template
@@ -23,38 +21,35 @@ def generator(lines):
 	>>> len(questions[1])
 	2
 	"""
-	lst = []
+	lst = list()
 	for line in lines:
-		if line.startswith('Question:'):
-			if lst:
-				yield lst
-			lst = [line.replace('Question:', '', 1)]
+		if line.startswith("Question:"):
+			if lst: yield lst
+			lst = [line.replace("Question:", '', 1)]
 		elif line.strip():
-			lst.append(line.replace('Option:', '', 1))
-	if lst:
-		yield lst
+			lst.append(line.replace("Option:", '', 1))
+	if lst: yield lst
 
 def converter(path, template):
-	questions = generator(open(path).readlines())
-	outpath = os.path.join('outputs', path).replace('.md', '.html')
-	os.makedirs(os.path.dirname(outpath), exist_ok=True)
-	f = open(outpath, 'w')
-	f.write(template.render(questions=questions))
-	f.close()
-	print(' * File outputted at', outpath)
+	with open(path) as file_pointer:
+		questions = generator(file_pointer.readlines())
+	outpath = join("outputs", path).replace(".md", ".html")
+	makedirs(dirname(outpath), exist_ok = True)
+	with open(outpath, 'w') as file_pointer:
+		file_pointer.write(template.render(questions = questions))
+	print(f" * File outputted at {outpath}")
 
 def main():
-	arguments = docopt.docopt(__doc__, version='Practice 1.0')
-	env = Environment(loader=PackageLoader('practice', 'templates'))
-	template = env.get_template('index.html')
-	path = arguments['<filepath>']
-	if os.path.isdir(path):
-		for filename in os.listdir(path):
-			if filename.endswith('.md'):
-				filepath = os.path.join(path, filename)
-				converter(filepath, template)
+	arguments = docopt(__doc__, version = "Practice 1.0")
+	env = Environment(loader=PackageLoader("practice", "templates"))
+	template = env.get_template("index.html")
+	path = arguments["<filepath>"]
+	if isdir(path):
+		for filename in listdir(path):
+			if filename.endswith(".md"):
+				converter(join(path, filename), template)
 	else:
 		converter(path, template)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	main()
